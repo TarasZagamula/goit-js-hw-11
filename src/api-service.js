@@ -7,17 +7,33 @@ export default class SearchApi {
     constructor() {
         this.searchQ = ``;
         this.page = 1;
+        this.hitsCounter = 0;
     }
 
-    fetchItems() {
-        const url = `${BASE_URL}?key=${API_KEY}&q=${this.searchQ}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`;
-        
-       return axios.get(url).then(res => res).then(data => {
-           console.log(this.searchQ);
-           console.log(data);
-           this.insertPage();
-           return data;
-        })
+    async fetchItems() {
+       const url = `${BASE_URL}?key=${API_KEY}&q=${this.searchQ}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`; 
+        const response = await axios.get(url);
+        this.insertPage();
+        this.setInsertCounter(response.data.hits.length);
+        console.log(this.page)
+        console.log(this.hitsCounter)
+           return response;
+    }
+
+    resetinsertCounter() {
+        this.hitsCounter = 0;
+    }
+    
+    get getCounter() {
+        return this.hitsCounter;
+    }
+
+    setInsertCounter(total) {
+    this.hitsCounter += total;
+    }
+    
+    get pageItem() {
+        return this.page;
     }
 
     insertPage() {
